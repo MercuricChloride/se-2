@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { ContractData, ContractInteraction } from "~~/components/ExampleUi";
+import { ContractInteraction } from "~~/components/ExampleUi";
+import { SubgraphTable } from "./subgraph";
 
 const ExampleUI: NextPage = () => {
   return (
@@ -12,9 +13,10 @@ const ExampleUI: NextPage = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree&display=swap" rel="stylesheet" />
       </Head>
-      <div className="grid lg:grid-cols-2 flex-grow" data-theme="exampleUi">
+      <div className="grid lg:grid-cols-3 flex-grow" data-theme="exampleUi">
         <ContractInteraction />
-        <ContractData />
+        <SubgraphTable uri="https://api.thegraph.com/subgraphs/name/blocklytics/bancor" />
+        {/* <SubgraphTable uri="https://api.thegraph.com/subgraphs/name/decentraland/marketplace" /> */}
       </div>
     </>
   );
