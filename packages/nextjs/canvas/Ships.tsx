@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 import { useGLTF, Clone } from "@react-three/drei";
-import { Object3D } from "three";
-import { Object3DProps, useFrame } from "@react-three/fiber";
+import { Mesh } from "three";
+import { Object3DProps } from "@react-three/fiber";
+import { animated } from "@react-spring/three";
 
 interface ShipProps {
   x: number;
@@ -11,53 +12,41 @@ interface ShipProps {
   rate: number;
 }
 
-function Ship({ x, y, z, rotation, rate }: ShipProps) {
+//function Ship({ x, y, z, rotation, rate }: ShipProps) {
+function Ship({ x, y, z }: ShipProps) {
   const model = useGLTF("/ship.glb");
-  const ref = useRef<Object3D>(null);
+  const ref = useRef<Mesh>(null);
   const [clicked, setClicked] = useState(false);
-
-  useFrame(() => {
-    if (!ref.current) return;
-    if (ref.current.rotation.x > 0.2 || ref.current.rotation.x < -0.2) {
-      rate = -rate;
-    }
-    ref.current.rotation.x += rate;
-
-    if (clicked) {
-      ref.current.position.set(ref.current.position.x, ref.current.position.y - 0.1, ref.current.position.z);
-    }
-  });
+  const [, setHovered] = useState(false);
 
   const onClick = () => {
-    console.log("clicked a super epic ship");
     if (!ref.current) return;
-    setClicked(true);
+    setClicked(!clicked);
+    console.log("click");
   };
 
   const onPointerOver = () => {
     if (!ref.current) return;
-
-    ref.current.scale.set(20, 20, 20);
+    setHovered(true);
+    console.log("over");
   };
 
   const onPointerLeave = () => {
     if (!ref.current) return;
-
-    ref.current.scale.set(10, 10, 10);
+    setHovered(false);
+    console.log("leave");
   };
 
   return (
-    <object3D
+    <animated.mesh
       ref={ref}
       position={[x, y, z]}
-      scale={[10, 10, 10]}
-      rotation={[0, rotation, 0]}
       onClick={onClick}
       onPointerOver={onPointerOver}
       onPointerLeave={onPointerLeave}
     >
       <Clone object={model.scene} deep />
-    </object3D>
+    </animated.mesh>
   );
 }
 

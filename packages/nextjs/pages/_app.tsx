@@ -29,7 +29,6 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
 
   //get the page route
   const { route } = useRouter();
-  console.log("route", route);
   const threeJsRoutes = useMemo(() => ["/three"], []);
   const isThreeJs = threeJsRoutes.includes(route);
 
