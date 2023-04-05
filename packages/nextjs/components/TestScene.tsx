@@ -1,4 +1,4 @@
-import { Sparkles, SpotLight, Text3D, useFBX, PositionalAudio, PerspectiveCamera } from "@react-three/drei";
+import { Sparkles, SpotLight, Text3D, useFBX, PositionalAudio, PerspectiveCamera, Float } from "@react-three/drei";
 import { extend, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -6,6 +6,10 @@ import * as THREE from "three";
 import { Water } from "three/examples/jsm/objects/Water.js";
 
 extend({ Water });
+
+const TEAL = "#36fff8";
+const RED = "#70041a";
+const ORANGE = "#c25400";
 
 function Lights() {
   const spotlight = useRef<THREE.SpotLight>(null);
@@ -26,16 +30,16 @@ function Lights() {
         ref={spotlight}
         position={[2502, -124, 3178]}
         distance={2000}
-        intensity={8}
-        color="green"
+        intensity={0}
+        color={RED}
         angle={Math.PI}
       />
       <SpotLight
         ref={spotlight2}
         position={[-480, -935, 3340]}
         distance={2000}
-        intensity={10}
-        color="blue"
+        intensity={0}
+        color={TEAL}
         angle={0.5}
       />
     </group>
@@ -46,6 +50,7 @@ function Cave() {
   const caveModel = useFBX("/cave.fbx");
   const { camera, scene } = useThree();
   const text = useRef<THREE.Mesh>(null);
+  /* const transform = useRef<THREE.Mesh>(null); */
 
   useEffect(() => {
     const cameraTarget = caveModel.getObjectByName("camera_target");
@@ -55,9 +60,11 @@ function Cave() {
     for (const crystal of crystals) {
       if (crystal instanceof THREE.Mesh) {
         if (crystal.children.filter(child => child.type === "PointLight").length > 0) continue;
-        const light = new THREE.PointLight("blue", 10, 1000);
+        const color = Math.random() > 0.5 ? ORANGE : ORANGE;
+        const light = new THREE.PointLight(color, 4, 1000);
         crystal.add(light);
-        crystal.material.emissiveIntensity = 0;
+        crystal.material.emissiveIntensity = 0.3;
+        crystal.material.emissive.set(new THREE.Color(color));
         crystal.material.metalness = 0;
       }
     }
@@ -78,34 +85,60 @@ function Cave() {
     camera.position.set(-60, 231, 2187);
 
     camera.lookAt(1854, 360, 3606);
-
-    if (text.current) {
-      text.current.lookAt(camera.position);
-    }
   }, [caveModel, camera, scene]);
 
   useFrame(() => {
-    console.log(camera.position);
+    /* console.log(transform.current.position); */
   });
 
   return (
     <group>
-      <Text3D
-        ref={text}
-        font="/font.json"
-        smooth={1}
-        lineHeight={0.75}
-        letterSpacing={-0.025}
-        size={200}
-        position={[2000, 600, 2200]}
-      >
-        {"Cult\nof\nCalamar"}
-      </Text3D>
-      <PerspectiveCamera makeDefault near={0.1} far={10000} fov={75} position={[-60, 231, 2187]} />
-      <group>
-        <Sparkles size={50} scale={50} count={200} speed={5} color="yellow" position={[50, 172, 2400]} />
-        <Sparkles size={50} scale={50} count={200} speed={5} color="yellow" position={[-30, 190, 2450]} />
-      </group>
+      {window.innerWidth < 800 ? (
+        <Float floatingRange={[0, 1]} floatIntensity={100} rotationIntensity={0.2} speed={2}>
+          <Text3D
+            ref={text}
+            font="/font.json"
+            smooth={1}
+            lineHeight={0.75}
+            letterSpacing={-0.025}
+            size={130}
+            rotation={[0, -Math.PI / 1.5, 0]}
+            position={[1000, 700, 2600]}
+          >
+            {"Cult\nof\nCalamar"}
+            <meshStandardMaterial emissive={ORANGE} emissiveIntensity={2} />
+            <pointLight color={RED} intensity={0} />
+          </Text3D>
+        </Float>
+      ) : (
+        <Float floatingRange={[0, 1]} floatIntensity={100} rotationIntensity={0.2} speed={2}>
+          <Text3D
+            ref={text}
+            font="/font.json"
+            smooth={1}
+            lineHeight={0.75}
+            letterSpacing={-0.025}
+            size={180}
+            rotation={[0, -Math.PI / 2, 0]}
+            position={[1300, 600, 2000]}
+          >
+            {"Cult\nof\nCalamar"}
+            <meshStandardMaterial emissive={ORANGE} emissiveIntensity={2} />
+            <pointLight color={RED} intensity={0} />
+          </Text3D>
+        </Float>
+      )}
+      <PerspectiveCamera
+        makeDefault
+        near={0.1}
+        far={10000}
+        fov={window.innerWidth < 800 ? 90 : 75}
+        position={[-60, 231, 2187]}
+      />
+      <Sparkles size={50} scale={50} count={200} speed={5} color="yellow" position={[73, 146, 2432]} />
+      <Sparkles size={50} scale={50} count={200} speed={5} color="yellow" position={[-28, 182, 2442]} />
+      <pointLight intensity={0.15} position={[13, -1334, 3034]} color={TEAL} />
+      {/* <TransformControls object={transform} position={[50, 172, 2400]} /> */}
       <Lights />
       {
         //@ts-ignore
@@ -126,7 +159,7 @@ function Ocean() {
 
   waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 
-  const geom = useMemo(() => new THREE.PlaneGeometry(5000, 5000), []);
+  const geom = useMemo(() => new THREE.PlaneGeometry(10000, 5000), []);
   const config = useMemo(
     () => ({
       textureWidth: 512,
