@@ -197,15 +197,8 @@ function Cave() {
 function Loading() {
   const { progress } = useProgress();
   return (
-    <Html center>
-      <div className="flex items-center justify-center h-screen w-screen">
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center">
-            <div className="w-10 h-10 border-2 border-white rounded-full animate-spin" />
-          </div>
-          <div className="mt-4 text-white">{progress} % loaded</div>
-        </div>
-      </div>
+    <Html fullscreen>
+      <div className="flex items-center justify-center h-screen w-screen">{progress} % loaded</div>
     </Html>
   );
 }
