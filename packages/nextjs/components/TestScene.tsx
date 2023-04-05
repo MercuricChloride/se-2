@@ -1,6 +1,16 @@
-import { Sparkles, SpotLight, Text3D, useFBX, PositionalAudio, PerspectiveCamera, Float } from "@react-three/drei";
+import {
+  Sparkles,
+  SpotLight,
+  Text3D,
+  useFBX,
+  PositionalAudio,
+  PerspectiveCamera,
+  Float,
+  Html,
+  ScreenSpace,
+} from "@react-three/drei";
 import { extend, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 import { Water } from "three/examples/jsm/objects/Water.js";
@@ -184,10 +194,26 @@ function Ocean() {
 }
 
 function TestScene() {
+  const [enter, setEnter] = useState(false);
   return (
     <>
-      <Ocean />
-      <Cave />
+      <group visible={enter}>
+        <Ocean />
+        <Cave />
+      </group>
+      <ScreenSpace depth={1} visible={!enter}>
+        <Html fullscreen occlude>
+          <div className="flex items-center justify-center h-screen w-screen">
+            <button
+              className="px-4 py-2 text-lg font-semibold text-white bg-black border border-white rounded-md hover:bg-white hover:text-black"
+              hidden={enter}
+              onClick={() => setEnter(true)}
+            >
+              Enter
+            </button>
+          </div>
+        </Html>
+      </ScreenSpace>
     </>
   );
 }

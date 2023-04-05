@@ -21,8 +21,6 @@ import NextNProgress from "nextjs-progressbar";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
-import { useState } from "react";
-
 const Scene = dynamic(() => import("../components/Scene"), { ssr: true });
 
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
@@ -33,7 +31,6 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const { route } = useRouter();
   const threeJsRoutes = useMemo(() => ["/three", "/scene"], []);
   const isThreeJs = threeJsRoutes.includes(route);
-  const [ok, setOk] = useState(false);
 
   useEffect(() => {
     if (price > 0) {
@@ -48,24 +45,10 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
         <div className="flex flex-col min-h-screen">
           {!isThreeJs && <Header />}
           <main className="relative flex flex-col flex-1">
-            {isThreeJs ? (
-              ok ? (
-                <Scene className="pointer-events-none" eventPrefix="client">
-                  <Component {...pageProps} />
-                </Scene>
-              ) : (
-                //center a button and make them click it to enter
-                <div className="flex flex-col items-center justify-center h-screen bg-black ">
-                  <button
-                    className="px-4 py-2 text-lg font-semibold text-white bg-black border border-white rounded-md hover:bg-white hover:text-black"
-                    onClick={() => setOk(true)}
-                  >
-                    Enter
-                  </button>
-                </div>
-              )
-            ) : (
-              <Component {...pageProps} />
+            {isThreeJs && (
+              <Scene className="pointer-events-none" eventPrefix="client">
+                <Component {...pageProps} />
+              </Scene>
             )}
           </main>
           {!isThreeJs && <Footer />}
