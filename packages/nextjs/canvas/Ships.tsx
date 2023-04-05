@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useGLTF, Clone } from "@react-three/drei";
 import { Mesh } from "three";
-import { Object3DProps } from "@react-three/fiber";
+import { Object3DProps, useFrame } from "@react-three/fiber";
 import { animated } from "@react-spring/three";
 
 interface ShipProps {
@@ -12,12 +12,16 @@ interface ShipProps {
   rate: number;
 }
 
-//function Ship({ x, y, z, rotation, rate }: ShipProps) {
-function Ship({ x, y, z }: ShipProps) {
+function Ship({ x, y, z, rotation, rate }: ShipProps) {
   const model = useGLTF("/ship.glb");
   const ref = useRef<Mesh>(null);
   const [clicked, setClicked] = useState(false);
   const [, setHovered] = useState(false);
+
+  useFrame(() => {
+    if (!ref.current) return;
+    ref.current.rotation.x = Math.sin(Date.now() * rate) * 0.1;
+  });
 
   const onClick = () => {
     if (!ref.current) return;
@@ -42,8 +46,10 @@ function Ship({ x, y, z }: ShipProps) {
       ref={ref}
       position={[x, y, z]}
       onClick={onClick}
+      rotation={[0, rotation, 0]}
       onPointerOver={onPointerOver}
       onPointerLeave={onPointerLeave}
+      scale={10}
     >
       <Clone object={model.scene} deep />
     </animated.mesh>
@@ -58,11 +64,11 @@ interface ShipsProps extends Object3DProps {
 export function Ships({ count = 10, range = 10 }: ShipsProps) {
   const ships = useMemo(() => {
     return Array.from({ length: count }, () => {
-      const x = Math.random() * range;
+      const x = Math.random() * range - 200;
       const y = 0;
-      const z = Math.random() * range;
+      const z = Math.random() * range - 200;
       const rotation = Math.random() * Math.PI * 2;
-      const rate = Math.random() * 0.001;
+      const rate = Math.random() * 0.002;
       return { x, y, z, rotation, rate };
     });
   }, [count, range]);
