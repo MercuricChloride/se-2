@@ -10,8 +10,8 @@ import {
   ScreenSpace,
   useProgress,
 } from "@react-three/drei";
-import { extend, useFrame, useThree } from "@react-three/fiber";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { extend, useFrame, useThree, useLoader } from "@react-three/fiber";
+import { Suspense, useEffect, useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 
 import { Water } from "three/examples/jsm/objects/Water.js";
@@ -164,35 +164,35 @@ function Cave() {
   );
 }
 
-/* function Ocean() {
- *   const ref = useRef<Water>(null);
- *   const waterNormals = useLoader(THREE.TextureLoader, "/water.jpeg");
- *
- *   waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
- *
- *   const geom = useMemo(() => new THREE.PlaneGeometry(10000, 5000), []);
- *   const config = useMemo(
- *     () => ({
- *       textureWidth: 512,
- *       textureHeight: 512,
- *       waterNormals,
- *       sunDirection: new THREE.Vector3(),
- *       sunColor: 0xffffff,
- *       waterColor: 0x0b5394,
- *       distortionScale: 40,
- *     }),
- *     // eslint-disable-next-line react-hooks/exhaustive-deps
- *     [waterNormals],
- *   );
- *
- *   useFrame((state, delta) => {
- *     if (ref.current) {
- *       ref.current.material.uniforms.time.value += delta;
- *     }
- *   });
- *   //@ts-ignore
- *   return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} position={[-60, 0, 2180]} />;
- * } */
+function Ocean() {
+  const ref = useRef<Water>(null);
+  const waterNormals = useLoader(THREE.TextureLoader, "/water.jpeg");
+
+  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+
+  const geom = useMemo(() => new THREE.PlaneGeometry(10000, 5000), []);
+  const config = useMemo(
+    () => ({
+      textureWidth: 512,
+      textureHeight: 512,
+      waterNormals,
+      sunDirection: new THREE.Vector3(),
+      sunColor: 0xffffff,
+      waterColor: 0x0b5394,
+      distortionScale: 200,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [waterNormals],
+  );
+
+  useFrame((state, delta) => {
+    if (ref.current) {
+      ref.current.material.uniforms.time.value += delta;
+    }
+  });
+  //@ts-ignore
+  return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} position={[-60, 0, 2180]} />;
+}
 
 function Loading() {
   const { progress } = useProgress();
@@ -208,7 +208,7 @@ function TestScene() {
   return (
     <Suspense fallback={<Loading />}>
       <group visible={enter}>
-        {/* <Ocean /> */}
+        <Ocean />
         <Cave />
       </group>
       <ScreenSpace depth={1} visible={!enter}>
